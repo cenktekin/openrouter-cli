@@ -1,0 +1,42 @@
+name: "analysis"
+description: "Detailed analysis with metrics and insights"
+schema:
+  type: "object"
+  properties:
+    main_analysis:
+      type: "string"
+      description: "The primary analysis text"
+    metrics:
+      type: "object"
+      properties:
+        confidence:
+          type: "number"
+          description: "Confidence score (0-1)"
+        relevance:
+          type: "number"
+          description: "Relevance score (0-1)"
+        complexity:
+          type: "string"
+          description: "Complexity level"
+      required: ["confidence", "relevance", "complexity"]
+    insights:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          insight:
+            type: "string"
+            description: "Key insight"
+          importance:
+            type: "string"
+            description: "Importance level"
+          evidence:
+            type: "string"
+            description: "Supporting evidence"
+        required: ["insight", "importance"]
+    recommendations:
+      type: "array"
+      items:
+        type: "string"
+      description: "Actionable recommendations"
+  required: ["main_analysis", "metrics", "insights", "recommendations"]

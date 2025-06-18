@@ -1,0 +1,280 @@
+models:
+
+  - name: "deepseek/deepseek-r1-0528:free"
+    description: "DeepSeek R1 0528"
+    category: "DeepSeek"
+    max_tokens: 163840
+    pricing: "Free"
+    features:
+      - "Large context window"
+      - "R1 architecture"
+      - "Advanced capabilities"
+
+  # DeepSeek Models
+  - name: "deepseek/deepseek-chat-v3-0324:free"
+    description: "DeepSeek V3 0324"
+    category: "DeepSeek"
+    max_tokens: 163840
+    pricing: "Free"
+    features:
+      - "Large context window"
+      - "Advanced reasoning"
+      - "Latest V3 architecture"
+
+  - name: "deepseek/deepseek-r1:free"
+    description: "DeepSeek R1"
+    category: "DeepSeek"
+    max_tokens: 163840
+    pricing: "Free"
+    features:
+      - "Large context window"
+      - "R1 architecture"
+      - "Stable version"
+
+  - name: "deepseek/deepseek-chat:free"
+    description: "DeepSeek V3"
+    category: "DeepSeek"
+    max_tokens: 163840
+    pricing: "Free"
+    features:
+      - "Large context window"
+      - "Chat optimized"
+      - "V3 architecture"
+
+  - name: "deepseek/deepseek-prover-v2:free"
+    description: "DeepSeek Prover V2"
+    category: "DeepSeek"
+    max_tokens: 163840
+    pricing: "Free"
+    features:
+      - "Large context window"
+      - "Prover capabilities"
+      - "V2 architecture"
+
+  - name: "deepseek/deepseek-v3-base:free"
+    description: "DeepSeek V3 Base"
+    category: "DeepSeek"
+    max_tokens: 163840
+    pricing: "Free"
+    features:
+      - "Large context window"
+      - "Base model"
+      - "V3 architecture"
+
+  - name: "deepseek/deepseek-r1-zero:free"
+    description: "DeepSeek R1 Zero"
+    category: "DeepSeek"
+    max_tokens: 163840
+    pricing: "Free"
+    features:
+      - "Large context window"
+      - "Zero-shot capabilities"
+      - "R1 architecture"
+  # High Context Models (100K+ tokens)
+  - name: "google/gemini-2.0-flash-exp:free"
+    description: "Google's Gemini 2.0 Flash Experimental"
+    category: "Google"
+    max_tokens: 1048576
+    pricing: "Free"
+    features:
+      - "Massive context window"
+      - "Experimental features"
+      - "Latest Gemini technology"
+
+  # Microsoft Models
+  - name: "microsoft/mai-ds-r1:free"
+    description: "Microsoft MAI DS R1"
+    category: "Microsoft"
+    max_tokens: 163840
+    pricing: "Free"
+    features:
+      - "Large context window"
+      - "Microsoft AI"
+      - "Advanced capabilities"
+
+  # Qwen Series
+  - name: "qwen/qwen3-30b-a3b:free"
+    description: "Qwen3 30B A3B"
+    category: "Qwen"
+    max_tokens: 40960
+    pricing: "Free"
+    features:
+      - "Complex reasoning"
+      - "Multilingual support"
+      - "Advanced agent tasks"
+      - "131K token context with YaRN"
+
+  - name: "qwen/qwen3-32b:free"
+    description: "Qwen3 32B"
+    category: "Qwen"
+    max_tokens: 40960
+    pricing: "Free"
+    features:
+      - "Large model"
+      - "Advanced capabilities"
+      - "Extended context"
+
+  - name: "qwen/qwen3-235b-a22b:free"
+    description: "Qwen3 235B A22B"
+    category: "Qwen"
+    max_tokens: 40960
+    pricing: "Free"
+    features:
+      - "Massive model"
+      - "Advanced architecture"
+      - "Extended capabilities"
+
+  - name: "qwen/qwen3-14b:free"
+    description: "Qwen3 14B"
+    category: "Qwen"
+    max_tokens: 40960
+    pricing: "Free"
+    features:
+      - "Medium size"
+      - "Balanced performance"
+      - "Extended context"
+
+  - name: "qwen/qwen3-8b:free"
+    description: "Qwen3 8B"
+    category: "Qwen"
+    max_tokens: 40960
+    pricing: "Free"
+    features:
+      - "Efficient size"
+      - "Good performance"
+      - "Extended context"
+
+  # Mistral Models
+  - name: "mistralai/devstral-small:free"
+    description: "Mistral Devstral Small"
+    category: "Mistral"
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Large context"
+      - "Developer focused"
+      - "Efficient processing"
+
+  - name: "mistralai/mistral-nemo:free"
+    description: "Mistral Nemo"
+    category: "Mistral"
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Large context"
+      - "Advanced capabilities"
+      - "Nemo architecture"
+
+  - name: "mistralai/mistral-small-3.1-24b-instruct:free"
+    description: "Mistral Small 3.1 24B"
+    category: "Mistral"
+    max_tokens: 96000
+    pricing: "Free"
+    features:
+      - "Instruction tuned"
+      - "3.1 architecture"
+      - "Balanced size"
+
+  # Meta Models
+  - name: "meta-llama/llama-4-maverick:free"
+    description: "Meta Llama 4 Maverick"
+    category: "Meta"
+    max_tokens: 128000
+    pricing: "Free"
+    features:
+      - "Large context"
+      - "Latest Llama 4"
+      - "Advanced capabilities"
+
+  - name: "meta-llama/llama-4-scout:free"
+    description: "Meta Llama 4 Scout"
+    category: "Meta"
+    max_tokens: 200000
+    pricing: "Free"
+    features:
+      - "Massive context"
+      - "Scout architecture"
+      - "Advanced capabilities"
+
+  - name: "meta-llama/llama-3.3-70b-instruct:free"
+    description: "Meta Llama 3.3 70B Instruct"
+    category: "Meta"
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Large context"
+      - "Instruction tuned"
+      - "3.3 architecture"
+
+  # Google Models
+  - name: "google/gemma-3-27b-it:free"
+    description: "Google Gemma 3 27B"
+    category: "Google"
+    max_tokens: 96000
+    pricing: "Free"
+    features:
+      - "Large model"
+      - "Instruction tuned"
+      - "Gemma 3 architecture"
+
+  - name: "google/gemma-3-12b-it:free"
+    description: "Google Gemma 3 12B"
+    category: "Google"
+    max_tokens: 96000
+    pricing: "Free"
+    features:
+      - "Medium size"
+      - "Instruction tuned"
+      - "Gemma 3 architecture"
+
+  - name: "google/gemma-3-4b-it:free"
+    description: "Google Gemma 3 4B"
+    category: "Google"
+    max_tokens: 96000
+    pricing: "Free"
+    features:
+      - "Lightweight"
+      - "Instruction tuned"
+      - "Gemma 3 architecture"
+
+  # Vision Models
+  - name: "meta-llama/llama-3.2-11b-vision-instruct:free"
+    description: "Meta Llama 3.2 11B Vision"
+    category: "Meta"
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Vision capabilities"
+      - "Image understanding"
+      - "Multimodal processing"
+
+  # Coding Models
+  - name: "qwen/qwen-2.5-coder-32b-instruct:free"
+    description: "Qwen 2.5 Coder 32B"
+    category: "Qwen"
+    max_tokens: 32768
+    pricing: "Free"
+    features:
+      - "Code generation"
+      - "Programming assistance"
+      - "Technical documentation"
+
+  - name: "agentica-org/deepcoder-14b-preview:free"
+    description: "Agentica Deepcoder 14B"
+    category: "Agentica"
+    max_tokens: 96000
+    pricing: "Free"
+    features:
+      - "Code generation"
+      - "Preview version"
+      - "Advanced capabilities"
+
+  - name: "open-r1/olympiccoder-32b:free"
+    description: "OlympicCoder 32B"
+    category: "Open-R1"
+    max_tokens: 32768
+    pricing: "Free"
+    features:
+      - "Code generation"
+      - "Large model"
+      - "Specialized coding"

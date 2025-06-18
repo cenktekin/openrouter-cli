@@ -1,0 +1,3 @@
+"""
+Tools for OpenRouter CLI.
+"""

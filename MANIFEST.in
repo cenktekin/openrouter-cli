@@ -1,0 +1,8 @@
+include LICENSE
+include README.md
+include models.yaml
+include requirements.txt
+include pyproject.toml
+include setup.py
+recursive-include openrouter_cli/schemas *.yaml
+recursive-include openrouter_cli/tools/file_operations/templates *.j2

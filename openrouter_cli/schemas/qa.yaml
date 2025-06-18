@@ -1,0 +1,35 @@
+name: "qa"
+description: "Question and Answer format with confidence and sources"
+schema:
+  type: "object"
+  properties:
+    answer:
+      type: "string"
+      description: "Direct answer to the question"
+    explanation:
+      type: "string"
+      description: "Detailed explanation of the answer"
+    confidence:
+      type: "number"
+      description: "Confidence score (0-1)"
+    sources:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          name:
+            type: "string"
+            description: "Source name"
+          url:
+            type: "string"
+            description: "Source URL (if available)"
+          relevance:
+            type: "number"
+            description: "Relevance score (0-1)"
+        required: ["name"]
+    related_questions:
+      type: "array"
+      items:
+        type: "string"
+      description: "Related questions for further exploration"
+  required: ["answer", "explanation", "confidence", "sources"]
