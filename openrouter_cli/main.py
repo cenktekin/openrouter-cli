@@ -20,9 +20,8 @@ from rich.table import Table
 from openrouter_cli.tools.openrouter_client import create_client
 from openrouter_cli.tools.file_operations.ai_ops import AIPoweredFileOperations
 from openrouter_cli.tools.mcp.mcp_client import MCPClient
+from openrouter_cli.tools.mcp.mcp_manager import MCPServerManager
 from openrouter_cli.schema_manager import SchemaManager
-
-# from openrouter_cli.tools.mcp_server import MCPServer, start_server
 import shlex
 import subprocess
 import threading
@@ -36,12 +35,14 @@ logging.getLogger("httpx").setLevel(logging.WARNING)  # Disable INFO logs
 console = Console()
 
 # Global state for MCP client and server
+mcp_manager = MCPServerManager()
 mcp_client_state = {
     "address": None,
     "connected": False,
     "session": None,
     "lock": asyncio.Lock(),
     "event_queue": asyncio.Queue(),
+    "active_server": None,
 }
 
 mcp_server_state = {
@@ -452,43 +453,98 @@ async def main():
                 else:
                     console.print("[red]Error clearing cache[/red]")
 
-            elif user_input == "/mcp list":
-                if not mcp_client_state["connected"]:
+            elif user_input == "/mcp servers":
+                servers = mcp_manager.list_servers()
+                if not servers:
                     console.print(
-                        "[yellow]No MCP client session. Connect first.[/yellow]"
+                        "[yellow]No MCP servers configured. Copy mcp_servers.json.example to mcp_servers.json[/yellow]"
+                    )
+                else:
+                    table = Table(title="Configured MCP Servers")
+                    table.add_column("Name", style="green")
+                    table.add_column("Type", style="cyan")
+                    table.add_column("URL/Command", style="yellow")
+                    table.add_column("Status", style="magenta")
+                    for s in servers:
+                        status = (
+                            "[green]Active[/green]"
+                            if s["active"]
+                            else "[red]Inactive[/red]"
+                        )
+                        table.add_row(
+                            s["name"],
+                            s["type"],
+                            s["url"][:50] + "..." if len(s["url"]) > 50 else s["url"],
+                            status,
+                        )
+                    console.print(table)
+                continue
+
+            elif user_input.startswith("/mcp connect "):
+                server_name = user_input[len("/mcp connect ") :].strip()
+                if not server_name:
+                    console.print("[yellow]Usage: /mcp connect <server_name>[/yellow]")
+                    continue
+
+                config = mcp_manager.get_server_config(server_name)
+                if not config:
+                    console.print(
+                        f"[red]Server '{server_name}' not found in config[/red]"
+                    )
+                    continue
+
+                if mcp_client_state["session"]:
+                    await mcp_client_state["session"].cleanup()
+
+                client = MCPClient(
+                    api_key=current_api_key, base_dir=".", model=selected_model
+                )
+                success = await mcp_manager.connect(server_name, client)
+                if success:
+                    mcp_client_state["session"] = client
+                    mcp_client_state["connected"] = True
+                    mcp_client_state["active_server"] = server_name
+                    console.print(
+                        f"[green]Connected to MCP server '{server_name}'[/green]"
+                    )
+                else:
+                    console.print(f"[red]Failed to connect to '{server_name}'[/red]")
+                continue
+
+            elif user_input == "/mcp disconnect":
+                if mcp_client_state["session"]:
+                    await mcp_client_state["session"].cleanup()
+                    mcp_client_state["session"] = None
+                    mcp_client_state["connected"] = False
+                    mcp_client_state["active_server"] = None
+                    console.print("[green]Disconnected from MCP server[/green]")
+                else:
+                    console.print("[yellow]Not connected to any MCP server[/yellow]")
+                continue
+
+            elif user_input == "/mcp list":
+                if not mcp_client_state["connected"] or not mcp_client_state["session"]:
+                    console.print(
+                        "[yellow]Not connected to any MCP server. Use /mcp connect <name>[/yellow]"
                     )
                     continue
                 try:
-                    # Check which connection type we're using (SSE or stdio)
-                    client = mcp_client_state["session"]
-                    if hasattr(client, "list_tools_sse") and client.connected:
-                        # Using SSE connection
-                        response = await client.list_tools_sse()
-                        tools = response.get("tools", [])
-                    else:
-                        # Using stdio connection or direct list_tools
-                        tools = client.list_tools()
-
+                    tools = mcp_client_state["session"].list_tools()
                     if tools:
-                        table = Table(title="Available MCP Tools")
+                        table = Table(
+                            title=f"MCP Tools ({mcp_client_state['active_server']})"
+                        )
                         table.add_column("Name", style="green")
                         table.add_column("Description", style="yellow")
-
                         for tool in tools:
-                            # Handle both formats (direct and SSE)
-                            if "function" in tool:
-                                name = tool["function"]["name"]
-                                desc = tool["function"]["description"]
-                            else:
-                                name = tool.get("name", "Unknown")
-                                desc = tool.get("description", "No description")
+                            name = tool.get("function", {}).get("name", "unknown")
+                            desc = tool.get("function", {}).get("description", "")[:60]
                             table.add_row(name, desc)
-
                         console.print(table)
                     else:
-                        console.print("[yellow]No MCP tools available[/yellow]")
+                        console.print("[yellow]No tools available[/yellow]")
                 except Exception as e:
-                    console.print(f"[red]Error listing tools: {str(e)}[/red]")
+                    console.print(f"[red]Error: {str(e)}[/red]")
                 continue
 
             elif user_input.startswith("/mcp use "):
@@ -501,74 +557,52 @@ async def main():
                         args[key.strip()] = value.strip()
                     else:
                         args[part.strip()] = True
-                if not mcp_client_state["connected"]:
+
+                if not mcp_client_state["connected"] or not mcp_client_state["session"]:
                     console.print(
-                        "[yellow]No MCP client session. Connect first.[/yellow]"
+                        "[yellow]Not connected. Use /mcp connect <name> first[/yellow]"
                     )
                     continue
-                try:
-                    # Check which connection type we're using (SSE or stdio)
-                    client = mcp_client_state["session"]
-                    if hasattr(client, "call_tool_sse") and client.connected:
-                        # Using SSE connection
-                        result = await client.call_tool_sse(tool_name, args)
-                    else:
-                        # Using stdio connection
-                        result = await client.process_query(
-                            f"Use the {tool_name} tool with the following parameters: {json.dumps(args)}"
-                        )
-                    console.print(f"[green]MCP tool result: {result}[/green]")
-                except Exception as e:
-                    console.print(f"[red]Error using MCP tool: {str(e)}[/red]")
-                continue
 
-            elif user_input.startswith("/mcp connect "):
-                address = user_input[len("/mcp connect ") :].strip()
                 try:
-                    if await connect_sse_background(address):
-                        console.print(
-                            f"[green]Connected to MCP server at {address}[/green]"
-                        )
-                except Exception as e:
-                    console.print(
-                        f"[red]Failed to connect to MCP server: {str(e)}[/red]"
+                    result = await mcp_client_state["session"].process_query(
+                        f"Use the {tool_name} tool with these parameters: {json.dumps(args)}",
+                        model=selected_model,
                     )
+                    console.print(
+                        Panel.fit(
+                            result,
+                            title=f"[green]{tool_name}[/green]",
+                            border_style="blue",
+                        )
+                    )
+                except Exception as e:
+                    console.print(f"[red]Error: {str(e)}[/red]")
                 continue
 
             elif user_input == "/mcp status":
                 if mcp_client_state["connected"] and mcp_client_state["session"]:
-                    status = {
-                        "connected": True,
-                        "status": "Connected",
-                        "session_id": mcp_client_state["session"].session_id,
-                        "address": mcp_client_state["session"].address,
-                    }
-                else:
-                    status = {
-                        "connected": False,
-                        "status": "Disconnected",
-                        "session_id": None,
-                        "address": None,
-                    }
-
-                address_str = (
-                    f"Address: {status['address']}\n" if status["address"] else ""
-                )
-                session_str = (
-                    f"Session ID: {status['session_id']}\n"
-                    if status["session_id"]
-                    else ""
-                )
-
-                console.print(
-                    Panel.fit(
-                        f"Status: [{'green' if status['connected'] else 'red'}]{status['status']}[/]\n"
-                        f"{session_str}"
-                        f"{address_str}",
-                        title="MCP Status",
-                        border_style="blue",
+                    client = mcp_client_state["session"]
+                    console.print(
+                        Panel.fit(
+                            f"Status: [green]Connected[/green]\n"
+                            f"Server: [cyan]{mcp_client_state.get('active_server', 'unknown')}[/cyan]\n"
+                            f"Transport: [yellow]{getattr(client, 'transport_type', 'unknown')}[/yellow]\n"
+                            f"Tools: [cyan]{len(client.list_tools())}[/cyan]",
+                            title="MCP Status",
+                            border_style="blue",
+                        )
                     )
-                )
+                else:
+                    console.print(
+                        Panel.fit(
+                            "Status: [red]Disconnected[/red]\n"
+                            "Use /mcp servers to see available servers\n"
+                            "Use /mcp connect <name> to connect",
+                            title="MCP Status",
+                            border_style="blue",
+                        )
+                    )
                 continue
 
             elif user_input.startswith("/mcp server start"):
@@ -643,54 +677,6 @@ async def main():
                     console.print("[yellow]MCP server is already running[/yellow]")
                 continue
 
-            elif user_input == "/mcp server stop":
-                if mcp_server_state["process"] is not None:
-                    mcp_server_state["process"].terminate()
-                    mcp_server_state["process"] = None
-                    mcp_server_state["running"] = False
-                    mcp_server_state["output_thread"] = None
-                    console.print("[green]MCP server stopped[/green]")
-                else:
-                    console.print("[yellow]MCP server is not running[/yellow]")
-                continue
-
-            elif user_input == "/mcp server status":
-                running = (
-                    mcp_server_state["process"] is not None
-                    and mcp_server_state["process"].poll() is None
-                )
-                mcp_server_state["running"] = running
-                if running:
-                    address_str = (
-                        f"Address: {mcp_server_state['address']}\n"
-                        if mcp_server_state["address"]
-                        else ""
-                    )
-                    console.print(
-                        Panel.fit(
-                            f"Status: [green]Running[/green]\n"
-                            f"Transport: {mcp_server_state['transport']}\n"
-                            f"Port: {mcp_server_state['port']}\n"
-                            f"Host: {mcp_server_state['host']}\n"
-                            f"{address_str}",
-                            title="MCP Server Status",
-                            border_style="blue",
-                        )
-                    )
-                else:
-                    last_output = "\n".join(
-                        list(mcp_server_state["output_buffer"])[-5:]
-                    )
-                    console.print(
-                        Panel.fit(
-                            "Status: [red]Stopped[/red]"
-                            + (f"\nLast output:\n{last_output}" if last_output else ""),
-                            title="MCP Server Status",
-                            border_style="blue",
-                        )
-                    )
-                continue
-
             elif user_input == "/update":
                 console.print(
                     "[yellow]Checking for free models on OpenRouter...[/yellow]"
@@ -762,13 +748,12 @@ async def main():
                         "  /batch <pattern> - Batch analyze files\n"
                         "  /clear-cache - Clear analysis cache\n"
                         "  /update - Update free models from OpenRouter\n"
-                        "  /mcp list - List MCP tools\n"
-                        "  /mcp use <tool> --arg=value - Use MCP tool with arguments\n"
-                        "  /mcp status - Show MCP status\n"
-                        "  /mcp connect <address> - Connect to MCP server (HTTP/SSE)\n"
-                        "  /mcp server start --transport sse --port 8000 - Start MCP server (SSE/HTTP)\n"
-                        "  /mcp server stop - Stop MCP server\n"
-                        "  /mcp server status - Show server status\n"
+                        "  /mcp servers - List configured MCP servers\n"
+                        "  /mcp connect <name> - Connect to an MCP server\n"
+                        "  /mcp disconnect - Disconnect from MCP server\n"
+                        "  /mcp list - List available MCP tools\n"
+                        "  /mcp use <tool> --arg=value - Use an MCP tool\n"
+                        "  /mcp status - Show MCP connection status\n"
                         "  /help - Show this help message\n"
                         "  /exit or /quit - Exit the application\n\n"
                         "Use ! prefix to run system commands (e.g., !dir)",

@@ -39,3 +39,5 @@ ENV/
 .env.*
 !.env.example
 /_legacy/
+mcp_config.json
+mcp_servers.json
