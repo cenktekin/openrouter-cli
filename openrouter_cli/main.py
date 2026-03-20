@@ -175,19 +175,19 @@ def display_models(models: List[Dict]) -> None:
     table = Table(title="Available Models")
     table.add_column("Index", style="cyan")
     table.add_column("Name", style="green")
-    table.add_column("Speed", style="yellow")
+    table.add_column("Context", style="yellow")
     table.add_column("Category", style="blue")
-    table.add_column("Max Tokens", style="magenta")
     table.add_column("Pricing", style="red")
 
     for idx, model in enumerate(models, 1):
-        speed = model.get("speed", "-")
+        context = model.get("context_length", model.get("max_tokens", "-"))
+        if isinstance(context, int):
+            context = f"{context:,}"
         table.add_row(
             str(idx),
             model["name"],
-            speed,
+            context,
             model["category"],
-            str(model["max_tokens"]),
             model["pricing"],
         )
 
@@ -772,14 +772,12 @@ async def main():
                     )
                     models_data = update_client.models.list()
 
-                    # Get model details for speed info
+                    # Get model details for context length
                     free_models = []
                     for m in models_data.data:
                         if ":free" in m.id.lower():
-                            # Try to get speed from model metadata
-                            speed = "fast"
-                            if hasattr(m, "metadata") and m.metadata:
-                                speed = m.metadata.get("speed", "fast")
+                            # Get context_length from model
+                            context_length = getattr(m, "context_length", 131072)
 
                             free_models.append(
                                 {
@@ -790,8 +788,8 @@ async def main():
                                     .title(),
                                     "category": m.id.split("/")[0].title(),
                                     "max_tokens": 131072,
+                                    "context_length": context_length,
                                     "pricing": "Free",
-                                    "speed": speed,
                                     "features": ["Free tier", "OpenRouter"],
                                 }
                             )
@@ -806,7 +804,9 @@ async def main():
                                 f'    description: "{model["description"]}"\n'
                             )
                             yaml_content += f'    category: "{model["category"]}"\n'
-                            yaml_content += f'    speed: "{model["speed"]}"\n'
+                            yaml_content += (
+                                f"    context_length: {model['context_length']}\n"
+                            )
                             yaml_content += f"    max_tokens: {model['max_tokens']}\n"
                             yaml_content += f'    pricing: "{model["pricing"]}"\n'
                             yaml_content += "    features:\n"
