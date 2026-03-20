@@ -16,7 +16,6 @@ from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt, Confirm
-from rich.completion import WordCompleter
 from rich.table import Table
 from openrouter_cli.tools.openrouter_client import create_client
 from openrouter_cli.tools.file_operations.ai_ops import AIPoweredFileOperations
@@ -77,8 +76,6 @@ slash_commands = [
     "/exit",
     "/quit",
 ]
-
-command_completer = WordCompleter(slash_commands, sentence=True)
 
 
 class OpenRouterKeyManager:
@@ -369,12 +366,8 @@ async def main():
             buffer.append(f"[output error] {e}")
 
     while True:
-        # Get user input with command completion
-        user_input = Prompt.ask(
-            "\n[bold green]You[/bold green]",
-            completer=command_completer,
-            complete_while_typing=True,
-        )
+        # Get user input
+        user_input = Prompt.ask("\n[bold green]You[/bold green]")
 
         # Handle commands
         if user_input.lower() in ["exit", "quit", "/exit", "/quit"]:
