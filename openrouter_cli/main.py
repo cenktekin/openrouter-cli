@@ -16,6 +16,7 @@ from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt, Confirm
+from rich.completion import WordCompleter
 from rich.table import Table
 from openrouter_cli.tools.openrouter_client import create_client
 from openrouter_cli.tools.file_operations.ai_ops import AIPoweredFileOperations
@@ -55,6 +56,29 @@ mcp_server_state = {
     "output_buffer": deque(maxlen=20),
     "output_thread": None,
 }
+
+slash_commands = [
+    "/help",
+    "/model",
+    "/clear",
+    "/copy",
+    "/copy all",
+    "/analyze",
+    "/batch",
+    "/clear-cache",
+    "/update",
+    "/mcp",
+    "/mcp servers",
+    "/mcp connect",
+    "/mcp disconnect",
+    "/mcp list",
+    "/mcp use",
+    "/mcp status",
+    "/exit",
+    "/quit",
+]
+
+command_completer = WordCompleter(slash_commands, sentence=True)
 
 
 class OpenRouterKeyManager:
@@ -315,14 +339,16 @@ async def main():
             "  /analyze <file> - Analyze a file\n"
             "  /batch <pattern> - Batch analyze files\n"
             "  /clear-cache - Clear analysis cache\n"
+            "  /update - Update free models from OpenRouter\n"
+            "  /mcp servers - List MCP servers\n"
+            "  /mcp connect <name> - Connect to MCP server\n"
+            "  /mcp disconnect - Disconnect from server\n"
             "  /mcp list - List MCP tools\n"
-            "  /mcp use <tool> - Use MCP tool\n"
+            "  /mcp use <tool> --arg=value - Use MCP tool\n"
             "  /mcp status - Show MCP status\n"
-            "  /mcp server start - Start MCP server\n"
-            "  /mcp server stop - Stop MCP server\n"
-            "  /mcp server status - Show server status\n"
             "  /help - Show this help message\n"
             "  /exit or /quit - Exit the application\n\n"
+            "[dim]Type / for commands, ! for system commands[/dim]\n"
             "Type your message to start chatting...\n"
             "Use ! prefix to run system commands (e.g., !dir)",
             title="Welcome",
@@ -343,8 +369,12 @@ async def main():
             buffer.append(f"[output error] {e}")
 
     while True:
-        # Get user input
-        user_input = Prompt.ask("\n[bold green]You[/bold green]")
+        # Get user input with command completion
+        user_input = Prompt.ask(
+            "\n[bold green]You[/bold green]",
+            completer=command_completer,
+            complete_while_typing=True,
+        )
 
         # Handle commands
         if user_input.lower() in ["exit", "quit", "/exit", "/quit"]:
