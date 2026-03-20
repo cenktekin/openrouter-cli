@@ -56,6 +56,12 @@ mcp_server_state = {
     "output_thread": None,
 }
 
+# Model settings
+model_settings = {
+    "temperature": 0.7,
+    "top_p": 1.0,
+}
+
 slash_commands = [
     "/help",
     "/model",
@@ -66,6 +72,9 @@ slash_commands = [
     "/batch",
     "/clear-cache",
     "/update",
+    "/temperature",
+    "/top_p",
+    "/settings",
     "/mcp",
     "/mcp servers",
     "/mcp connect",
@@ -176,21 +185,35 @@ def select_model(models: List[Dict]) -> str:
             console.print("[red]Please enter a valid number.[/red]")
 
 
-async def stream_chat(client, messages: List[Dict], model: Optional[str] = None):
+async def stream_chat(
+    client,
+    messages: List[Dict],
+    model: Optional[str] = None,
+    temperature: float = 0.7,
+    top_p: float = 1.0,
+):
     """Stream chat completion from OpenRouter."""
     try:
         # Add system message if not present
         if not any(msg["role"] == "system" for msg in messages):
-            messages.insert(
-                0,
-                {
-                    "role": "system",
-                    "content": "You are a helpful AI assistant. Please respond in English only.",
-                },
-            )
+            system_content = "You are a helpful AI assistant."
+
+            # Load custom system prompt if exists
+            system_prompt_path = Path.home() / ".openrouter-cli" / "system_prompt.txt"
+            if system_prompt_path.exists():
+                try:
+                    system_content = system_prompt_path.read_text().strip()
+                except Exception:
+                    pass
+
+            messages.insert(0, {"role": "system", "content": system_content})
 
         response = await client.chat.completions.create(
-            model=model or client.model, messages=messages, stream=True
+            model=model or client.model,
+            messages=messages,
+            stream=True,
+            temperature=temperature,
+            top_p=top_p,
         )
 
         full_response = ""
@@ -337,6 +360,9 @@ async def main():
             "  /batch <pattern> - Batch analyze files\n"
             "  /clear-cache - Clear analysis cache\n"
             "  /update - Update free models from OpenRouter\n"
+            "  /temperature <0.0-2.0> - Set temperature\n"
+            "  /top_p <0.0-1.0> - Set top_p\n"
+            "  /settings - Show current settings\n"
             "  /mcp servers - List MCP servers\n"
             "  /mcp connect <name> - Connect to MCP server\n"
             "  /mcp disconnect - Disconnect from server\n"
@@ -346,7 +372,6 @@ async def main():
             "  /help - Show this help message\n"
             "  /exit or /quit - Exit the application\n\n"
             "[dim]Type / for commands, ! for system commands[/dim]\n"
-            "Type your message to start chatting...\n"
             "Use ! prefix to run system commands (e.g., !dir)",
             title="Welcome",
             border_style="blue",
@@ -759,6 +784,48 @@ async def main():
                     console.print(f"[red]Error updating models: {str(e)}[/red]")
                 continue
 
+            elif user_input.startswith("/temperature "):
+                try:
+                    value = float(user_input.split()[1])
+                    if 0.0 <= value <= 2.0:
+                        model_settings["temperature"] = value
+                        console.print(f"[green]Temperature set to {value}[/green]")
+                    else:
+                        console.print(
+                            "[yellow]Temperature must be between 0.0 and 2.0[/yellow]"
+                        )
+                except (ValueError, IndexError):
+                    console.print("[yellow]Usage: /temperature <0.0-2.0>[/yellow]")
+                continue
+
+            elif user_input.startswith("/top_p "):
+                try:
+                    value = float(user_input.split()[1])
+                    if 0.0 <= value <= 1.0:
+                        model_settings["top_p"] = value
+                        console.print(f"[green]Top_p set to {value}[/green]")
+                    else:
+                        console.print(
+                            "[yellow]Top_p must be between 0.0 and 1.0[/yellow]"
+                        )
+                except (ValueError, IndexError):
+                    console.print("[yellow]Usage: /top_p <0.0-1.0>[/yellow]")
+                continue
+
+            elif user_input == "/settings":
+                console.print(
+                    Panel.fit(
+                        f"[bold]Current Settings[/bold]\n"
+                        f"Temperature: [cyan]{model_settings['temperature']}[/cyan]\n"
+                        f"Top_p: [cyan]{model_settings['top_p']}[/cyan]\n"
+                        f"Model: [cyan]{selected_model}[/cyan]\n\n"
+                        f"[dim]System prompt: ~/.openrouter-cli/system_prompt.txt[/dim]",
+                        title="Settings",
+                        border_style="blue",
+                    )
+                )
+                continue
+
             elif user_input == "/help":
                 console.print(
                     Panel.fit(
@@ -771,6 +838,9 @@ async def main():
                         "  /batch <pattern> - Batch analyze files\n"
                         "  /clear-cache - Clear analysis cache\n"
                         "  /update - Update free models from OpenRouter\n"
+                        "  /temperature <0.0-2.0> - Set temperature\n"
+                        "  /top_p <0.0-1.0> - Set top_p\n"
+                        "  /settings - Show current settings\n"
                         "  /mcp servers - List configured MCP servers\n"
                         "  /mcp connect <name> - Connect to an MCP server\n"
                         "  /mcp disconnect - Disconnect from MCP server\n"
@@ -795,7 +865,13 @@ async def main():
         messages.append({"role": "user", "content": user_input})
 
         # Get response from OpenRouter
-        response = await stream_chat(client, messages, selected_model)
+        response = await stream_chat(
+            client,
+            messages,
+            selected_model,
+            temperature=model_settings["temperature"],
+            top_p=model_settings["top_p"],
+        )
         if response:
             messages.append({"role": "assistant", "content": response})
 
