@@ -3,8 +3,10 @@ OpenRouter CLI - A command-line interface for OpenRouter's API.
 """
 
 import os
+import sys
 import json
 import asyncio
+import signal
 import pyperclip
 import yaml
 import urllib.request
@@ -13,6 +15,25 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Ctrl+C twice to exit
+exit_requested = False
+
+
+def signal_handler(sig, frame):
+    global exit_requested
+    if exit_requested:
+        console.print("\n[yellow]Exiting...[/yellow]")
+        sys.exit(0)
+    else:
+        exit_requested = True
+        console.print("\n[yellow]Press Ctrl+C again to exit[/yellow]")
+        asyncio.get_event_loop().call_later(
+            2, lambda: setattr(sys.modules[__name__], "exit_requested", False)
+        )
+
+
+signal.signal(signal.SIGINT, signal_handler)
 from typing import List, Dict, Optional, Any
 from datetime import datetime
 from rich.console import Console
