@@ -175,16 +175,17 @@ def display_models(models: List[Dict]) -> None:
     table = Table(title="Available Models")
     table.add_column("Index", style="cyan")
     table.add_column("Name", style="green")
-    table.add_column("Description", style="yellow")
+    table.add_column("Speed", style="yellow")
     table.add_column("Category", style="blue")
     table.add_column("Max Tokens", style="magenta")
     table.add_column("Pricing", style="red")
 
     for idx, model in enumerate(models, 1):
+        speed = model.get("speed", "-")
         table.add_row(
             str(idx),
             model["name"],
-            model["description"],
+            speed,
             model["category"],
             str(model["max_tokens"]),
             model["pricing"],
@@ -771,9 +772,15 @@ async def main():
                     )
                     models_data = update_client.models.list()
 
+                    # Get model details for speed info
                     free_models = []
                     for m in models_data.data:
                         if ":free" in m.id.lower():
+                            # Try to get speed from model metadata
+                            speed = "fast"
+                            if hasattr(m, "metadata") and m.metadata:
+                                speed = m.metadata.get("speed", "fast")
+
                             free_models.append(
                                 {
                                     "name": m.id,
@@ -784,6 +791,7 @@ async def main():
                                     "category": m.id.split("/")[0].title(),
                                     "max_tokens": 131072,
                                     "pricing": "Free",
+                                    "speed": speed,
                                     "features": ["Free tier", "OpenRouter"],
                                 }
                             )
@@ -798,6 +806,7 @@ async def main():
                                 f'    description: "{model["description"]}"\n'
                             )
                             yaml_content += f'    category: "{model["category"]}"\n'
+                            yaml_content += f'    speed: "{model["speed"]}"\n'
                             yaml_content += f"    max_tokens: {model['max_tokens']}\n"
                             yaml_content += f'    pricing: "{model["pricing"]}"\n'
                             yaml_content += "    features:\n"
