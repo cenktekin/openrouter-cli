@@ -7,6 +7,8 @@ import json
 import asyncio
 import pyperclip
 import yaml
+import urllib.request
+import urllib.parse
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -72,6 +74,7 @@ slash_commands = [
     "/batch",
     "/clear-cache",
     "/update",
+    "/search",
     "/temperature",
     "/top_p",
     "/settings",
@@ -360,6 +363,7 @@ async def main():
             "  /batch <pattern> - Batch analyze files\n"
             "  /clear-cache - Clear analysis cache\n"
             "  /update - Update free models from OpenRouter\n"
+            "  /search <query> - Search the web with DuckDuckGo\n"
             "  /temperature <0.0-2.0> - Set temperature\n"
             "  /top_p <0.0-1.0> - Set top_p\n"
             "  /settings - Show current settings\n"
@@ -784,6 +788,50 @@ async def main():
                     console.print(f"[red]Error updating models: {str(e)}[/red]")
                 continue
 
+            elif user_input.startswith("/search "):
+                query = user_input[8:].strip()
+                if not query:
+                    console.print("[yellow]Usage: /search <query>[/yellow]")
+                    continue
+                console.print(f"[dim]Searching DuckDuckGo for: {query}[/dim]")
+                try:
+                    encoded_query = urllib.parse.quote(query)
+                    url = f"https://api.duckduckgo.com/?q={encoded_query}&format=json&no_html=1"
+                    req = urllib.request.Request(
+                        url, headers={"User-Agent": "Mozilla/5.0"}
+                    )
+                    with urllib.request.urlopen(req, timeout=10) as response:
+                        data = json.loads(response.read().decode("utf-8"))
+
+                    if data.get("AbstractText"):
+                        console.print(
+                            Panel.fit(
+                                f"[bold]{query}[/bold]\n\n{data['AbstractText']}",
+                                title="DuckDuckGo",
+                                border_style="green",
+                            )
+                        )
+                    elif data.get("RelatedTopics"):
+                        results = []
+                        for item in data["RelatedTopics"][:5]:
+                            if "Text" in item:
+                                results.append(f"• {item['Text'][:200]}")
+                        if results:
+                            console.print(
+                                Panel.fit(
+                                    f"[bold]{query}[/bold]\n\n" + "\n".join(results),
+                                    title="DuckDuckGo",
+                                    border_style="green",
+                                )
+                            )
+                        else:
+                            console.print("[yellow]No results found[/yellow]")
+                    else:
+                        console.print("[yellow]No results found[/yellow]")
+                except Exception as e:
+                    console.print(f"[red]Search error: {str(e)}[/red]")
+                continue
+
             elif user_input.startswith("/temperature "):
                 try:
                     value = float(user_input.split()[1])
@@ -838,6 +886,7 @@ async def main():
                         "  /batch <pattern> - Batch analyze files\n"
                         "  /clear-cache - Clear analysis cache\n"
                         "  /update - Update free models from OpenRouter\n"
+                        "  /search <query> - Search the web with DuckDuckGo\n"
                         "  /temperature <0.0-2.0> - Set temperature\n"
                         "  /top_p <0.0-1.0> - Set top_p\n"
                         "  /settings - Show current settings\n"
