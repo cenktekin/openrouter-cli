@@ -40,4 +40,4 @@ ENV/
 !.env.example
 /_legacy/
 mcp_config.json
-mcp_servers.json
+mcp_servers.jsonOPENROUTER_API_KEYS.json

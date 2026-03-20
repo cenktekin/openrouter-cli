@@ -16,7 +16,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Ctrl+C twice to exit
 exit_requested = False
 
 
@@ -24,21 +23,23 @@ def signal_handler(sig, frame):
     global exit_requested
     if exit_requested:
         console.print("\n[yellow]Exiting...[/yellow]")
-        sys.exit(0)
+        raise KeyboardInterrupt
     else:
         exit_requested = True
         console.print("\n[yellow]Press Ctrl+C again to exit[/yellow]")
-        asyncio.get_event_loop().call_later(
+        global _exit_timer
+        _exit_timer = asyncio.get_event_loop().call_later(
             2, lambda: setattr(sys.modules[__name__], "exit_requested", False)
         )
 
 
 signal.signal(signal.SIGINT, signal_handler)
+_exit_timer = None
 from typing import List, Dict, Optional, Any
 from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
-from rich.prompt import Prompt, Confirm
+from rich.prompt import Confirm, Prompt
 from rich.table import Table
 from openrouter_cli.tools.openrouter_client import create_client
 from openrouter_cli.tools.file_operations.ai_ops import AIPoweredFileOperations
@@ -49,6 +50,7 @@ import shlex
 import subprocess
 import threading
 from collections import deque
+
 
 import logging
 
@@ -110,6 +112,46 @@ slash_commands = [
     "/quit",
 ]
 
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.history import InMemoryHistory
+from prompt_toolkit.styles import Style
+from prompt_toolkit.formatted_text import HTML
+
+
+def _blocking_prompt(prompt_text: str) -> str:
+    history = InMemoryHistory()
+    completer = WordCompleter(slash_commands, ignore_case=True, sentence=True)
+
+    style = Style.from_dict(
+        {
+            "prompt": "bold green",
+            "completion-menu.completion": "bg:#444444 #ffffff",
+            "completion-menu.completion.current": "bg:#008888 #ffffff",
+            "scrollbar.background": "bg:#884444",
+            "scrollbar.button": "bg:#222222",
+        }
+    )
+
+    try:
+        user_input = prompt(
+            HTML('<style fg="green">You</style>: '),
+            history=history,
+            completer=completer,
+            style=style,
+            complete_while_typing=True,
+            enable_history_search=True,
+            mouse_support=True,
+        )
+        return user_input
+    except EOFError:
+        return "/exit"
+
+
+async def get_input_async(prompt_text: str) -> str:
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, _blocking_prompt, prompt_text)
+
 
 class OpenRouterKeyManager:
     """Manages OpenRouter API keys."""
@@ -119,9 +161,8 @@ class OpenRouterKeyManager:
         self.load_keys()
 
     def load_keys(self):
-        """Load API keys from OPENROUTER_API_KEYS.json in home directory."""
-        home_dir = Path.home()
-        keys_file = home_dir / "OPENROUTER_API_KEYS.json"
+        """Load API keys from OPENROUTER_API_KEYS.json."""
+        keys_file = Path("OPENROUTER_API_KEYS.json")
 
         if keys_file.exists():
             try:
@@ -133,15 +174,9 @@ class OpenRouterKeyManager:
                         self.keys = data["keys"]
                     else:
                         self.keys = []
-                # console.print("[green]Successfully loaded API keys from OPENROUTER_API_KEYS.json[/green]")
             except Exception as e:
                 console.print(f"[red]Error loading API keys: {str(e)}[/red]")
                 self.keys = []
-        else:
-            console.print(
-                "[yellow]No OPENROUTER_API_KEYS.json found in home directory[/yellow]"
-            )
-            self.keys = []
 
     def get_random_key(self) -> Optional[str]:
         """Get a random API key."""
@@ -416,8 +451,18 @@ async def main():
             buffer.append(f"[output error] {e}")
 
     while True:
-        # Get user input
-        user_input = Prompt.ask("\n[bold green]You[/bold green]")
+        try:
+            # Get user input
+            user_input = await get_input_async("\nYou")
+        except KeyboardInterrupt:
+            if mcp_server_state["process"] is not None:
+                mcp_server_state["process"].terminate()
+                mcp_server_state["process"] = None
+                mcp_server_state["running"] = False
+                mcp_server_state["output_thread"] = None
+                console.print("[yellow]MCP server stopped[/yellow]")
+            await disconnect_sse()
+            break
 
         # Handle commands
         if user_input.lower() in ["exit", "quit", "/exit", "/quit"]:

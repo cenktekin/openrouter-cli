@@ -17,17 +17,28 @@ Bu araç, kullanıcı dostu bir CLI üzerinden sohbet, dosya analizi ve MCP öze
 - **Şema Yönetimi**: Yanıt formatlarını tanımlama ve doğrulama
 - **Yanıt Biçimlendirme**: Çoklu çıktı formatları (JSON, pretty, compact)
 
+### Gelişmiş Özellikler
+- **Otomatik Komut Tamamlama**: Tab tuşu ile komut önerileri
+- **Renkli Arayüz**: Rich kütüphanesi ile görsel zenginlik
+- **Komut Geçmişi**: Yukarı/aşağı ok tuşları ile geçmişteki mesajlara erişim
+- **Sohbet Geçmişi Yönetimi**: /copy ve /copy all komutları ile kopyalama
+- **Ayarlar Yönetimi**: /temperature ve /top_p parametreleri ile model davranışını ayarlama
+
 ### Dosya Analizi
 - **Görsel Analiz**: AI vision modelleriyle görüntü analizi
 - **PDF İşleme**: PDF belgelerini çıkarma ve özetleme
 - **Metin Analizi**: Metin dosyalarını işleme ve analiz etme
 - **Kod İnceleme**: Kod dosyalarını analiz etme ve inceleme
-
-### Gelişmiş Özellikler
 - **Toplu İşleme**: Birden fazla dosyayı eşzamanlı işleme
 - **Önbellek Sistemi**: Analiz sonuçlarını otomatik önbelleğe alma
 - **Özel İstemler**: Özel analiz istemleri desteği
-- **İlerleme Takibi**: Gerçek zamanlı ilerleme izleme
+
+### MCP Özellikleri
+- **MCP Sunucu Yönetimi**: /mcp servers ile yapılandırılmış sunucuları listeleme
+- **MCP Bağlantısı**: /mcp connect ile sunuculara bağlanma
+- **MCP Araçları**: /mcp list ile kullanılabilir araçları görme
+- **MCP Kullanımı**: /mcp use ile araçları kullanma
+- **MCP Durumu**: /mcp status ile bağlantı durumunu kontrol etme
 
 ### Dosya İşlemleri
 - **Desteklenen Formatlar**:
@@ -61,11 +72,16 @@ pip install -r requirements.txt
 
 3. OpenRouter API anahtarınızı ayarlayın:
 ```bash
-# .env dosyası oluşturun
+# .env dosyası oluşturun (.env.example varsa otomatik kopyalanır)
 cp .env.example .env
 # .env dosyasını düzenleyin ve API anahtarınızı ekleyin
 
 # OPENROUTER_API_KEY=your_api_key_here
+
+# Alternatif olarak proje dizininde OPENROUTER_API_KEYS.json oluşturun:
+# [
+#   "your_api_key_here"
+# ]
 ```
 
 ## Kullanım
@@ -77,16 +93,34 @@ cp .env.example .env
 ./run.sh
 # veya
 source venv/bin/activate && python run.py
-
-# Komutlar:
-/exit          - Sohbeti sonlandır
-/clear         - Sohbet geçmişini temizle
-/model         - AI modelini değiştir
-/copy          - Son yanıtı kopyala
-/copy all      - Tüm sohbeti kopyala
-/update        - Ücretsiz modelleri OpenRouter'dan güncelle
-/help          - Yardım göster
 ```
+
+**Komutlar:**
+- `/help` - Yardım göster
+- `/model` - AI modelini değiştir
+- `/clear` - Sohbet geçmişini temizle
+- `/copy` - Son yanıtı kopyala
+- `/copy all` - Tüm sohbeti kopyala
+- `/analyze <file>` - Dosya analizi yap
+- `/batch <pattern>` - Toplu dosya analizi
+- `/clear-cache` - Önbelleği temizle
+- `/update` - Ücretsiz modelleri OpenRouter'dan güncelle
+- `/search <query>` - DuckDuckGo ile web araması
+- `/temperature <0.0-2.0>` - Model sıcaklığını ayarla
+- `/top_p <0.0-1.0>` - top_p değerini ayarla
+- `/settings` - Mevcut ayarları göster
+- `/mcp servers` - MCP sunucularını listele
+- `/mcp connect <name>` - MCP sunucusuna bağlan
+- `/mcp disconnect` - MCP bağlantısını kes
+- `/mcp list` - MCP araçlarını listele
+- `/mcp use <tool> --arg=value` - MCP aracını kullan
+- `/mcp status` - MCP durumunu göster
+- `/exit` veya `/quit` - Sohbeti sonlandır
+
+**Özellikler:**
+- **Otomatik Tamamlama**: `/` yazınca Tab tuşu ile komut önerileri gelir
+- **Geçmiş**: Yukarı/aşağı ok tuşları ile geçmişteki mesajlara erişebilirsiniz
+- **Renkli Çıktı**: Rich kütüphanesi ile görsel olarak zengin çıktı
 
 ### Dosya Analizi
 
@@ -176,7 +210,7 @@ Bu proje [mexyusef/openrouter-cli](https://github.com/mexyusef/openrouter-cli) r
 
 A command-line interface for interacting with OpenRouter's AI models.
 
-This tool provides a rich set of features for chat, file analysis, and MCP through a user-friendly CLI.
+This tool provides a rich set of features for chat, file analysis, and MCP through a user-friendly CLI with auto-completion and colorful output.
 
 ## Features
 
@@ -187,17 +221,28 @@ This tool provides a rich set of features for chat, file analysis, and MCP throu
 - **Schema Management**: Define and validate response formats
 - **Response Formatting**: Multiple output formats (JSON, pretty, compact)
 
+### Advanced Features
+- **Auto-Completion**: Tab-completion for commands
+- **Colorful Interface**: Rich visual output with Rich library
+- **Command History**: Navigate through past messages with arrow keys
+- **Chat History Management**: Copy last response or entire conversation
+- **Settings Management**: Adjust model behavior with /temperature and /top_p
+
 ### File Analysis
 - **Image Analysis**: Analyze images with AI vision models
 - **PDF Processing**: Extract and summarize PDF documents
 - **Text Analysis**: Process and analyze text files
 - **Code Review**: Analyze and review code files
-
-### Advanced Features
 - **Batch Processing**: Process multiple files concurrently
 - **Caching System**: Automatic caching of analysis results
 - **Custom Prompts**: Support for custom analysis prompts
-- **Progress Tracking**: Real-time progress monitoring
+
+### MCP Features
+- **MCP Server Management**: List configured servers with /mcp servers
+- **MCP Connection**: Connect to servers with /mcp connect
+- **MCP Tools**: View available tools with /mcp list
+- **MCP Usage**: Use tools with /mcp use
+- **MCP Status**: Check connection status with /mcp status
 
 ### Supported Formats
 - Images (`.jpg`, `.jpeg`, `.png`, `.gif`, `.bmp`, `.webp`, `.tiff`)
@@ -225,11 +270,16 @@ pip install -r requirements.txt
 
 3. Set up your OpenRouter API key:
 ```bash
-# Create .env file
+# Create .env file (automatically copied from .env.example if available)
 cp .env.example .env
 # Edit .env and add your API key
 
 # OPENROUTER_API_KEY=your_api_key_here
+
+# Alternatively, create OPENROUTER_API_KEYS.json in project directory:
+# [
+#   "your_api_key_here"
+# ]
 ```
 
 ## Usage
@@ -241,16 +291,34 @@ cp .env.example .env
 ./run.sh
 # or
 source venv/bin/activate && python run.py
-
-# Commands:
-/exit          - Quit the chat
-/clear         - Clear chat history
-/model         - Switch AI model
-/copy          - Copy last response
-/copy all      - Copy entire conversation
-/update        - Update free models from OpenRouter
-/help          - Show help
 ```
+
+**Commands:**
+- `/help` - Show help
+- `/model` - Switch AI model
+- `/clear` - Clear chat history
+- `/copy` - Copy last response
+- `/copy all` - Copy entire conversation
+- `/analyze <file>` - Analyze a file
+- `/batch <pattern>` - Batch analyze files
+- `/clear-cache` - Clear cache
+- `/update` - Update free models from OpenRouter
+- `/search <query>` - Web search with DuckDuckGo
+- `/temperature <0.0-2.0>` - Set model temperature
+- `/top_p <0.0-1.0>` - Set top_p value
+- `/settings` - Show current settings
+- `/mcp servers` - List MCP servers
+- `/mcp connect <name>` - Connect to MCP server
+- `/mcp disconnect` - Disconnect from MCP
+- `/mcp list` - List MCP tools
+- `/mcp use <tool> --arg=value` - Use MCP tool
+- `/mcp status` - Show MCP status
+- `/exit` or `/quit` - Quit chat
+
+**Features:**
+- **Auto-Completion**: Type `/` and press Tab to see command suggestions
+- **History**: Use up/down arrow keys to navigate through past messages
+- **Colorful Output**: Rich visual output with the Rich library
 
 ### File Analysis
 
@@ -318,10 +386,10 @@ files:
 
 ## Contributing
 
-1. Fork the repository
+1. Fork repository
 2. Create a feature branch (`git checkout -b feature/name`)
 3. Commit your changes
-4. Push to the branch (`git push origin feature/name`)
+4. Push to branch (`git push origin feature/name`)
 5. Open a Pull Request
 
 ## License
@@ -336,6 +404,7 @@ This project is forked from [mexyusef/openrouter-cli](https://github.com/mexyuse
 
 - openai: For OpenRouter API integration
 - rich: For enhanced console output
+- prompt_toolkit: For auto-completion and rich input
 - pyyaml: For configuration management
 - cryptography: For secure operations
 - tqdm: For progress tracking

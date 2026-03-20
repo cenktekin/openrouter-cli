@@ -10,9 +10,13 @@ fi
 
 source venv/bin/activate
 
-if [ ! -f ".env" ] && [ -z "$OPENROUTER_API_KEY" ]; then
-    echo "Warning: .env file not found and OPENROUTER_API_KEY not set"
-    echo "Please create .env file or set OPENROUTER_API_KEY environment variable"
+if [ ! -f ".env" ] && [ ! -f ".env.example" ]; then
+    echo "Warning: .env file not found"
+    echo "Please create .env file with OPENROUTER_API_KEY"
+elif [ ! -f ".env" ] && [ -f ".env.example" ]; then
+    echo "Creating .env from .env.example..."
+    cp .env.example .env
+    echo "Please edit .env file and add your OPENROUTER_API_KEY"
 fi
 
 python run.py
