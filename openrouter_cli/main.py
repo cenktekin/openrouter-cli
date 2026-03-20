@@ -46,6 +46,12 @@ from openrouter_cli.tools.file_operations.ai_ops import AIPoweredFileOperations
 from openrouter_cli.tools.mcp.mcp_client import MCPClient
 from openrouter_cli.tools.mcp.mcp_manager import MCPServerManager
 from openrouter_cli.schema_manager import SchemaManager
+import sys
+import importlib
+
+# Import key_manager directly to avoid circular import issues
+key_manager_module = importlib.import_module("openrouter_cli.key_manager")
+OpenRouterKeyManager = key_manager_module.OpenRouterKeyManager
 import shlex
 import subprocess
 import threading
@@ -151,48 +157,6 @@ def _blocking_prompt(prompt_text: str) -> str:
 async def get_input_async(prompt_text: str) -> str:
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, _blocking_prompt, prompt_text)
-
-
-class OpenRouterKeyManager:
-    """Manages OpenRouter API keys."""
-
-    def __init__(self):
-        self.keys = []
-        self.load_keys()
-
-    def load_keys(self):
-        """Load API keys from OPENROUTER_API_KEYS.json."""
-        keys_file = Path("OPENROUTER_API_KEYS.json")
-
-        if keys_file.exists():
-            try:
-                with open(keys_file, "r") as f:
-                    data = json.load(f)
-                    if isinstance(data, list):
-                        self.keys = data
-                    elif isinstance(data, dict) and "keys" in data:
-                        self.keys = data["keys"]
-                    else:
-                        self.keys = []
-            except Exception as e:
-                console.print(f"[red]Error loading API keys: {str(e)}[/red]")
-                self.keys = []
-
-    def get_random_key(self) -> Optional[str]:
-        """Get a random API key."""
-        if not self.keys:
-            return None
-        # If keys is a list of strings, use first key
-        if isinstance(self.keys[0], str):
-            return self.keys[0]
-        # If keys is a list of dicts with 'key' field
-        elif isinstance(self.keys[0], dict) and "key" in self.keys[0]:
-            return self.keys[0]["key"]
-        return None
-
-    def has_keys(self) -> bool:
-        """Check if there are any API keys."""
-        return len(self.keys) > 0
 
 
 def load_models() -> List[Dict]:
@@ -308,8 +272,8 @@ async def connect_sse_background(address):
 
             # Create a client using the enhanced MCPClient from tools/file_operations
             # from tools.file_operations.mcp_client import MCPClient
-            key_manager = OpenRouterKeyManager()
-            api_key = key_manager.get_random_key()
+            key_manager_instance = key_manager.OpenRouterKeyManager()
+            api_key = key_manager_instance.get_random_key()
             base_dir = str(Path.cwd())
             client = MCPClient(api_key=api_key, base_dir=base_dir)
 
