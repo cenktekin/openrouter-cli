@@ -177,8 +177,12 @@ async def main():
 
     models = load_models()
     if not models:
-        console.print("[red]No models found. Run /update to fetch free models.[/red]")
-        sys.exit(1)
+        console.print("[yellow]No models found. Fetching free models from OpenRouter...[/yellow]")
+        await update_models(api_key)
+        models = load_models()
+        if not models:
+            console.print("[red]Still no models. Check your API key.[/red]")
+            sys.exit(1)
 
     selected_model = select_model(models)
 
