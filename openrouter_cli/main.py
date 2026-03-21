@@ -140,16 +140,8 @@ async def update_models(api_key: str) -> None:
                     }
                 )
 
-        # Sort: openrouter/free first, openrouter/auto second, then by created (newest first)
-        def sort_key(x):
-            if x["name"] == "openrouter/free":
-                return (0, -x["created"])
-            elif x["name"] == "openrouter/auto":
-                return (1, -x["created"])
-            else:
-                return (2, -x["created"])
-        
-        free_models.sort(key=sort_key)
+        # Sort by created timestamp (newest first)
+        free_models.sort(key=lambda x: -x["created"])
 
         if not free_models:
             console.print("[yellow]No free models found.[/yellow]")

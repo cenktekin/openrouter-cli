@@ -1,16 +1,5 @@
 models:
 
-  - name: "openrouter/free"
-    description: "Free"
-    category: "Openrouter"
-    context_length: 200000
-    created: 1769917427
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
   - name: "nvidia/nemotron-3-super-120b-a12b:free"
     description: "Nemotron 3 Super 120B A12B:Free"
     category: "Nvidia"
@@ -27,6 +16,17 @@ models:
     category: "Minimax"
     context_length: 196608
     created: 1770908502
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "openrouter/free"
+    description: "Free"
+    category: "Openrouter"
+    context_length: 200000
+    created: 1769917427
     max_tokens: 131072
     pricing: "Free"
     features:
