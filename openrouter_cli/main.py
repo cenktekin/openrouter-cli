@@ -27,8 +27,19 @@ COMMANDS = {
     "/clear": "Clear chat history",
     "/copy": "Copy last response",
     "/copy all": "Copy entire conversation",
+    "/settings": "Show model settings",
+    "/temperature": "Set temperature (0-2)",
+    "/top_p": "Set top P (0-1)",
+    "/max_tokens": "Set max tokens (100-32000)",
     "/update": "Update free models from OpenRouter",
     "/exit": "Exit the application",
+}
+
+# Model settings
+model_settings = {
+    "temperature": 0.7,
+    "top_p": 1.0,
+    "max_tokens": 4096,
 }
 
 
@@ -88,6 +99,9 @@ async def stream_chat(client: OpenRouterClient, messages: list, model: str) -> s
             model=model,
             messages=messages,
             stream=True,
+            temperature=model_settings["temperature"],
+            top_p=model_settings["top_p"],
+            max_tokens=model_settings["max_tokens"],
         )
 
         full_response = ""
@@ -203,6 +217,10 @@ async def main():
             "  /clear - Clear history\n"
             "  /copy - Copy last response\n"
             "  /copy all - Copy all\n"
+            "  /settings - Show model settings\n"
+            "  /temperature <0-2> - Set temperature\n"
+            "  /top_p <0-1> - Set top P\n"
+            "  /max_tokens <100-32000> - Set max tokens\n"
             "  /update - Update models\n"
             "  /exit - Exit\n",
             title="Welcome",
@@ -283,6 +301,55 @@ async def main():
                     console.print("[green]Copied conversation.[/green]")
                 else:
                     console.print("[yellow]Nothing to copy.[/yellow]")
+                continue
+
+            elif user_input == "/settings":
+                console.print(
+                    Panel.fit(
+                        f"[bold]Temperature:[/bold] {model_settings['temperature']}\n"
+                        f"[bold]Top P:[/bold] {model_settings['top_p']}\n"
+                        f"[bold]Max Tokens:[/bold] {model_settings['max_tokens']}\n\n"
+                        f"[dim]Usage: /temperature <0-2>, /top_p <0-1>, /max_tokens <100-32000>[/dim]",
+                        title="Model Settings",
+                        border_style="blue",
+                    )
+                )
+                continue
+
+            elif user_input.startswith("/temperature "):
+                try:
+                    value = float(user_input.split()[1])
+                    if 0.0 <= value <= 2.0:
+                        model_settings["temperature"] = value
+                        console.print(f"[green]Temperature set to {value}[/green]")
+                    else:
+                        console.print("[yellow]Temperature must be between 0.0 and 2.0[/yellow]")
+                except (ValueError, IndexError):
+                    console.print("[yellow]Usage: /temperature <0.0-2.0>[/yellow]")
+                continue
+
+            elif user_input.startswith("/top_p "):
+                try:
+                    value = float(user_input.split()[1])
+                    if 0.0 <= value <= 1.0:
+                        model_settings["top_p"] = value
+                        console.print(f"[green]Top P set to {value}[/green]")
+                    else:
+                        console.print("[yellow]Top P must be between 0.0 and 1.0[/yellow]")
+                except (ValueError, IndexError):
+                    console.print("[yellow]Usage: /top_p <0.0-1.0>[/yellow]")
+                continue
+
+            elif user_input.startswith("/max_tokens "):
+                try:
+                    value = int(user_input.split()[1])
+                    if 100 <= value <= 32000:
+                        model_settings["max_tokens"] = value
+                        console.print(f"[green]Max tokens set to {value}[/green]")
+                    else:
+                        console.print("[yellow]Max tokens must be between 100 and 32000[/yellow]")
+                except (ValueError, IndexError):
+                    console.print("[yellow]Usage: /max_tokens <100-32000>[/yellow]")
                 continue
 
             elif user_input == "/update":
