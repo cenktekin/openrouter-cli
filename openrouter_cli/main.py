@@ -46,16 +46,18 @@ def load_models() -> list:
 def display_models(models: list) -> None:
     """Display available models."""
     table = Table(title="Available Models")
+    table.add_column("#", style="cyan")
     table.add_column("Name", style="green")
     table.add_column("Context", style="yellow")
     table.add_column("Category", style="blue")
     table.add_column("Pricing", style="red")
 
-    for model in models:
+    for idx, model in enumerate(models, 1):
         context = model.get("context_length", model.get("max_tokens", "-"))
         if isinstance(context, int):
             context = f"{context:,}"
         table.add_row(
+            str(idx),
             model["name"],
             str(context),
             model["category"],
@@ -66,17 +68,17 @@ def display_models(models: list) -> None:
 
 
 def select_model(models: list) -> str:
-    """Let user select a model."""
+    """Let user select a model by number."""
     display_models(models)
     while True:
         try:
-            choice = Prompt.ask("\nSelect a model", default=models[0]["name"])
-            for model in models:
-                if model["name"] == choice:
-                    return model["name"]
-            console.print("[red]Invalid model. Try again.[/red]")
-        except Exception:
-            console.print("[red]Please enter a valid model name.[/red]")
+            choice = Prompt.ask("\nSelect a model (enter number)", default="1")
+            idx = int(choice) - 1
+            if 0 <= idx < len(models):
+                return models[idx]["name"]
+            console.print("[red]Invalid selection. Please try again.[/red]")
+        except ValueError:
+            console.print("[red]Please enter a valid number.[/red]")
 
 
 async def stream_chat(client: OpenRouterClient, messages: list, model: str) -> str:
@@ -135,6 +137,9 @@ async def update_models(api_key: str) -> None:
                         "features": ["Free tier", "OpenRouter"],
                     }
                 )
+
+        # Sort: openrouter/free first, then alphabetically
+        free_models.sort(key=lambda x: (0 if x["name"] == "openrouter/free" else 1, x["name"]))
 
         if not free_models:
             console.print("[yellow]No free models found.[/yellow]")
