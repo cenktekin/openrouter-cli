@@ -123,7 +123,8 @@ async def update_models(api_key: str) -> None:
 
         free_models = []
         for m in models_data.data:
-            if ":free" in m.id.lower():
+            # Include models that are :free or have 'free' in their ID
+            if m.id.endswith(":free") or (m.id.startswith("openrouter/") and "free" in m.id.lower()):
                 free_models.append(
                     {
                         "name": m.id,
@@ -138,8 +139,16 @@ async def update_models(api_key: str) -> None:
                     }
                 )
 
-        # Sort: openrouter/free first, then alphabetically
-        free_models.sort(key=lambda x: (0 if x["name"] == "openrouter/free" else 1, x["name"]))
+        # Sort: openrouter/free first, openrouter/auto second, then alphabetically
+        def sort_key(x):
+            if x["name"] == "openrouter/free":
+                return (0, x["name"])
+            elif x["name"] == "openrouter/auto":
+                return (1, x["name"])
+            else:
+                return (2, x["name"])
+        
+        free_models.sort(key=sort_key)
 
         if not free_models:
             console.print("[yellow]No free models found.[/yellow]")
