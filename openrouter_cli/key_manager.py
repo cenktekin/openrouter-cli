@@ -20,21 +20,8 @@ class OpenRouterKeyManager:
         if config_dir:
             self.config_dir = Path(config_dir)
         else:
-            # Check multiple locations for config
-            home = Path.home()
-            possible_dirs = [
-                Path.cwd() / ".openrouter",
-                home / ".openrouter",
-                home / ".config" / "openrouter-cli",
-            ]
-
-            for dir_path in possible_dirs:
-                if dir_path.exists():
-                    self.config_dir = dir_path
-                    break
-            else:
-                # Default to .openrouter in home directory if none exist
-                self.config_dir = home / ".openrouter"
+            # Default to .openrouter in current working directory (project-local)
+            self.config_dir = Path.cwd() / ".openrouter"
 
         self.keys_file = self.config_dir / "keys.json"
         self.keys: List[str] = []

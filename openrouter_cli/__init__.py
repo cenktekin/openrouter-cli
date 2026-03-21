@@ -2,7 +2,3 @@
 
 __version__ = "0.0.1"
 
-from openrouter_cli.key_manager import OpenRouterKeyManager
-from openrouter_cli.main import main
-
-__all__ = ['OpenRouterKeyManager', 'main']
