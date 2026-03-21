@@ -1,9 +1,0 @@
-name: "chat"
-description: "Simple chat response format"
-schema:
-  type: "object"
-  properties:
-    response:
-      type: "string"
-      description: "The chat response text"
-  required: ["response"]

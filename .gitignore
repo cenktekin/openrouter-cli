@@ -42,3 +42,6 @@ ENV/
 mcp_config.json
 mcp_servers.json
 keys.json
+OPENROUTER_API_KEYS.json
+*.key
+*.secret

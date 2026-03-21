@@ -1,18 +1,20 @@
 #!/bin/bash
+# OpenRouter CLI - Quick start script
+
+set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-if [ ! -d "venv" ]; then
-    echo "Virtual environment not found. Creating..."
-    python3 -m venv venv
+# Activate virtual environment
+if [ -d "venv" ]; then
+    source venv/bin/activate
+else
+    echo "Creating virtual environment..."
+    python -m venv venv
+    source venv/bin/activate
+    pip install -q -r requirements.txt
 fi
 
-source venv/bin/activate
-
-if [ ! -f ".env" ] && [ ! -f ".env.example" ]; then
-    echo "Warning: .env file not found"
-    echo "Please create .env file with OPENROUTER_API_KEY"
-fi
-
-python run.py
+# Run the CLI
+python -m openrouter_cli.main
