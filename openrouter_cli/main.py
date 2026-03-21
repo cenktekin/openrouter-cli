@@ -84,14 +84,14 @@ def select_model(models: list) -> str:
 async def stream_chat(client: OpenRouterClient, messages: list, model: str) -> str:
     """Stream chat completion."""
     try:
-        response = await client.client.chat.completions.create(
+        response = client.client.chat.completions.create(
             model=model,
             messages=messages,
             stream=True,
         )
 
         full_response = ""
-        async for chunk in response:
+        for chunk in response:
             if chunk.choices[0].delta.content:
                 content = chunk.choices[0].delta.content
                 console.print(content, end="", style="white")
@@ -139,14 +139,14 @@ async def update_models(api_key: str) -> None:
                     }
                 )
 
-        # Sort: openrouter/free first, openrouter/auto second, then alphabetically
+        # Sort: openrouter/free first, openrouter/auto second, then by context_length (descending)
         def sort_key(x):
             if x["name"] == "openrouter/free":
-                return (0, x["name"])
+                return (0, -x["context_length"])
             elif x["name"] == "openrouter/auto":
-                return (1, x["name"])
+                return (1, -x["context_length"])
             else:
-                return (2, x["name"])
+                return (2, -x["context_length"])
         
         free_models.sort(key=sort_key)
 
