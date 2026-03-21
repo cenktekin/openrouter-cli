@@ -133,20 +133,21 @@ async def update_models(api_key: str) -> None:
                         ).title(),
                         "category": m.id.split("/")[0].title(),
                         "context_length": getattr(m, "context_length", 131072),
+                        "created": getattr(m, "created", 0),  # Unix timestamp
                         "max_tokens": 131072,
                         "pricing": "Free",
                         "features": ["Free tier", "OpenRouter"],
                     }
                 )
 
-        # Sort: openrouter/free first, openrouter/auto second, then by context_length (descending)
+        # Sort: openrouter/free first, openrouter/auto second, then by created (newest first)
         def sort_key(x):
             if x["name"] == "openrouter/free":
-                return (0, -x["context_length"])
+                return (0, -x["created"])
             elif x["name"] == "openrouter/auto":
-                return (1, -x["context_length"])
+                return (1, -x["created"])
             else:
-                return (2, -x["context_length"])
+                return (2, -x["created"])
         
         free_models.sort(key=sort_key)
 

@@ -4,6 +4,7 @@ models:
     description: "Free"
     category: "Openrouter"
     context_length: 200000
+    created: 1769917427
     max_tokens: 131072
     pricing: "Free"
     features:
@@ -14,46 +15,7 @@ models:
     description: "Nemotron 3 Super 120B A12B:Free"
     category: "Nvidia"
     context_length: 262144
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "qwen/qwen3-next-80b-a3b-instruct:free"
-    description: "Qwen3 Next 80B A3B Instruct:Free"
-    category: "Qwen"
-    context_length: 262144
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "qwen/qwen3-coder:free"
-    description: "Qwen3 Coder:Free"
-    category: "Qwen"
-    context_length: 262000
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "stepfun/step-3.5-flash:free"
-    description: "Step 3.5 Flash:Free"
-    category: "Stepfun"
-    context_length: 256000
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "nvidia/nemotron-3-nano-30b-a3b:free"
-    description: "Nemotron 3 Nano 30B A3B:Free"
-    category: "Nvidia"
-    context_length: 256000
+    created: 1773245239
     max_tokens: 131072
     pricing: "Free"
     features:
@@ -64,76 +26,18 @@ models:
     description: "Minimax M2.5:Free"
     category: "Minimax"
     context_length: 196608
+    created: 1770908502
     max_tokens: 131072
     pricing: "Free"
     features:
       - "Free tier"
       - "OpenRouter"
 
-  - name: "arcee-ai/trinity-mini:free"
-    description: "Trinity Mini:Free"
-    category: "Arcee-Ai"
-    context_length: 131072
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "openai/gpt-oss-120b:free"
-    description: "Gpt Oss 120B:Free"
-    category: "Openai"
-    context_length: 131072
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "openai/gpt-oss-20b:free"
-    description: "Gpt Oss 20B:Free"
-    category: "Openai"
-    context_length: 131072
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "z-ai/glm-4.5-air:free"
-    description: "Glm 4.5 Air:Free"
-    category: "Z-Ai"
-    context_length: 131072
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "google/gemma-3-27b-it:free"
-    description: "Gemma 3 27B It:Free"
-    category: "Google"
-    context_length: 131072
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "meta-llama/llama-3.2-3b-instruct:free"
-    description: "Llama 3.2 3B Instruct:Free"
-    category: "Meta-Llama"
-    context_length: 131072
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "nousresearch/hermes-3-llama-3.1-405b:free"
-    description: "Hermes 3 Llama 3.1 405B:Free"
-    category: "Nousresearch"
-    context_length: 131072
+  - name: "stepfun/step-3.5-flash:free"
+    description: "Step 3.5 Flash:Free"
+    category: "Stepfun"
+    context_length: 256000
+    created: 1769728337
     max_tokens: 131072
     pricing: "Free"
     features:
@@ -144,56 +48,7 @@ models:
     description: "Trinity Large Preview:Free"
     category: "Arcee-Ai"
     context_length: 131000
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "nvidia/nemotron-nano-12b-v2-vl:free"
-    description: "Nemotron Nano 12B V2 Vl:Free"
-    category: "Nvidia"
-    context_length: 128000
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "nvidia/nemotron-nano-9b-v2:free"
-    description: "Nemotron Nano 9B V2:Free"
-    category: "Nvidia"
-    context_length: 128000
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "mistralai/mistral-small-3.1-24b-instruct:free"
-    description: "Mistral Small 3.1 24B Instruct:Free"
-    category: "Mistralai"
-    context_length: 128000
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "meta-llama/llama-3.3-70b-instruct:free"
-    description: "Llama 3.3 70B Instruct:Free"
-    category: "Meta-Llama"
-    context_length: 65536
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "qwen/qwen3-4b:free"
-    description: "Qwen3 4B:Free"
-    category: "Qwen"
-    context_length: 40960
+    created: 1769552670
     max_tokens: 131072
     pricing: "Free"
     features:
@@ -204,6 +59,7 @@ models:
     description: "Lfm 2.5 1.2B Thinking:Free"
     category: "Liquid"
     context_length: 32768
+    created: 1768927527
     max_tokens: 131072
     pricing: "Free"
     features:
@@ -214,6 +70,106 @@ models:
     description: "Lfm 2.5 1.2B Instruct:Free"
     category: "Liquid"
     context_length: 32768
+    created: 1768927521
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "nvidia/nemotron-3-nano-30b-a3b:free"
+    description: "Nemotron 3 Nano 30B A3B:Free"
+    category: "Nvidia"
+    context_length: 256000
+    created: 1765731275
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "arcee-ai/trinity-mini:free"
+    description: "Trinity Mini:Free"
+    category: "Arcee-Ai"
+    context_length: 131072
+    created: 1764601720
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "nvidia/nemotron-nano-12b-v2-vl:free"
+    description: "Nemotron Nano 12B V2 Vl:Free"
+    category: "Nvidia"
+    context_length: 128000
+    created: 1761675565
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "qwen/qwen3-next-80b-a3b-instruct:free"
+    description: "Qwen3 Next 80B A3B Instruct:Free"
+    category: "Qwen"
+    context_length: 262144
+    created: 1757612213
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "nvidia/nemotron-nano-9b-v2:free"
+    description: "Nemotron Nano 9B V2:Free"
+    category: "Nvidia"
+    context_length: 128000
+    created: 1757106807
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "openai/gpt-oss-120b:free"
+    description: "Gpt Oss 120B:Free"
+    category: "Openai"
+    context_length: 131072
+    created: 1754414231
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "openai/gpt-oss-20b:free"
+    description: "Gpt Oss 20B:Free"
+    category: "Openai"
+    context_length: 131072
+    created: 1754414229
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "z-ai/glm-4.5-air:free"
+    description: "Glm 4.5 Air:Free"
+    category: "Z-Ai"
+    context_length: 131072
+    created: 1753471258
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "qwen/qwen3-coder:free"
+    description: "Qwen3 Coder:Free"
+    category: "Qwen"
+    context_length: 262000
+    created: 1753230546
     max_tokens: 131072
     pricing: "Free"
     features:
@@ -224,26 +180,7 @@ models:
     description: "Dolphin Mistral 24B Venice Edition:Free"
     category: "Cognitivecomputations"
     context_length: 32768
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "google/gemma-3-4b-it:free"
-    description: "Gemma 3 4B It:Free"
-    category: "Google"
-    context_length: 32768
-    max_tokens: 131072
-    pricing: "Free"
-    features:
-      - "Free tier"
-      - "OpenRouter"
-
-  - name: "google/gemma-3-12b-it:free"
-    description: "Gemma 3 12B It:Free"
-    category: "Google"
-    context_length: 32768
+    created: 1752094966
     max_tokens: 131072
     pricing: "Free"
     features:
@@ -254,6 +191,7 @@ models:
     description: "Gemma 3N E2B It:Free"
     category: "Google"
     context_length: 8192
+    created: 1752074904
     max_tokens: 131072
     pricing: "Free"
     features:
@@ -264,6 +202,95 @@ models:
     description: "Gemma 3N E4B It:Free"
     category: "Google"
     context_length: 8192
+    created: 1747776824
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "qwen/qwen3-4b:free"
+    description: "Qwen3 4B:Free"
+    category: "Qwen"
+    context_length: 40960
+    created: 1746031104
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "mistralai/mistral-small-3.1-24b-instruct:free"
+    description: "Mistral Small 3.1 24B Instruct:Free"
+    category: "Mistralai"
+    context_length: 128000
+    created: 1742238937
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "google/gemma-3-4b-it:free"
+    description: "Gemma 3 4B It:Free"
+    category: "Google"
+    context_length: 32768
+    created: 1741905510
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "google/gemma-3-12b-it:free"
+    description: "Gemma 3 12B It:Free"
+    category: "Google"
+    context_length: 32768
+    created: 1741902625
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "google/gemma-3-27b-it:free"
+    description: "Gemma 3 27B It:Free"
+    category: "Google"
+    context_length: 131072
+    created: 1741756359
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "meta-llama/llama-3.3-70b-instruct:free"
+    description: "Llama 3.3 70B Instruct:Free"
+    category: "Meta-Llama"
+    context_length: 65536
+    created: 1733506137
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "meta-llama/llama-3.2-3b-instruct:free"
+    description: "Llama 3.2 3B Instruct:Free"
+    category: "Meta-Llama"
+    context_length: 131072
+    created: 1727222400
+    max_tokens: 131072
+    pricing: "Free"
+    features:
+      - "Free tier"
+      - "OpenRouter"
+
+  - name: "nousresearch/hermes-3-llama-3.1-405b:free"
+    description: "Hermes 3 Llama 3.1 405B:Free"
+    category: "Nousresearch"
+    context_length: 131072
+    created: 1723766400
     max_tokens: 131072
     pricing: "Free"
     features:
