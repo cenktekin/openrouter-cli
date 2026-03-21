@@ -223,8 +223,15 @@ async def main():
         try:
             user_input = Prompt.ask("\nYou")
         except KeyboardInterrupt:
-            console.print("\n[yellow]Exiting...[/yellow]")
-            break
+            console.print("\n[yellow]Press Ctrl+C again to exit, or type /exit[/yellow]")
+            try:
+                user_input = Prompt.ask("\nYou")
+            except KeyboardInterrupt:
+                console.print("\n[yellow]Goodbye![/yellow]")
+                break
+
+        if not user_input:
+            continue
 
         if user_input.lower() in ["exit", "quit", "/exit", "/quit"]:
             console.print("[yellow]Goodbye![/yellow]")
