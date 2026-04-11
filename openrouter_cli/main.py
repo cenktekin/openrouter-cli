@@ -228,21 +228,7 @@ async def main():
         )
     )
 
-    messages = [
-        {
-            "role": "system",
-            "content": "You are a helpful AI assistant. Be concise, direct, and honest."
-        }
-    ]
-
-    # Load custom system prompt if exists
-    system_prompt_path = Path.cwd() / ".openrouter" / "system_prompt.txt"
-    if system_prompt_path.exists():
-        try:
-            messages[0]["content"] = system_prompt_path.read_text().strip()
-            console.print(f"[dim]System prompt loaded from {system_prompt_path}[/dim]")
-        except Exception:
-            pass
+    messages = []
 
     while True:
         try:
